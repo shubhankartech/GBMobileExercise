@@ -16,10 +16,10 @@ class ImageItemViewHolder(view: View, private val glide: RequestManager)
     : RecyclerView.ViewHolder(view) {
     private val author: TextView = view.findViewById(R.id.author)
     private val thumbnail : ImageView = view.findViewById(R.id.image)
-    private var post : PicsumImage? = null
+    private var item : PicsumImage? = null
     init {
         view.setOnClickListener {
-            post?.url?.let { url ->
+            item?.url?.let { url ->
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 view.context.startActivity(intent)
             }
@@ -27,7 +27,7 @@ class ImageItemViewHolder(view: View, private val glide: RequestManager)
     }
 
     fun bind(post: PicsumImage?) {
-        this.post = post
+        this.item = post
         author.text = post?.author ?: "loading"
         if (post?.downloadUrl?.startsWith("http") == true) {
             thumbnail.visibility = View.VISIBLE

@@ -63,6 +63,7 @@ class ModelDataSource(
                 }
 
             } catch (exception: Exception) {
+                // displaying appropriate error message based on error not handled
                 val error = NetworkState.error(exception.message ?: "unknown error")
                 networkState.postValue(error)
                 initialLoad.postValue(error)
@@ -129,7 +130,7 @@ class ModelDataSource(
     private fun extract(split: String): String? {
         val beginIndex: Int = split.indexOf('=')
         val endIndex: Int = split.lastIndexOf('&')
-        if(endIndex == -1 || endIndex >=beginIndex) return null
+        if(endIndex == -1 || endIndex <=beginIndex) return null
         return split.substring(beginIndex + 1, endIndex)
 
     }

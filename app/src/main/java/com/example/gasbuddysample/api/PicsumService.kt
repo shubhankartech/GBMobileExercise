@@ -11,11 +11,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import java.io.IOException
 import java.util.logging.Logger
+import okhttp3.OkHttpClient
+
+
 
 
 interface PicsumService {
 
-    @GET("/list")
+    @GET("/v2/list")
     suspend fun fetchPosts(
         @Query("page") page: String = "1",
         @Query("limit") limit: Int? = 20
@@ -29,11 +32,15 @@ interface PicsumService {
 
     companion object {
         fun getService(): PicsumService {
+
+            val okHttpClient = OkHttpClient.Builder()
+                .addNetworkInterceptor(LoggingInterceptor()) //This is used to add NetworkInterceptor.
+                .build()
+
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://picsum.photos/v2/")
-
+                .baseUrl("https://picsum.photos/")
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
-
                 .build()
             return retrofit.create(PicsumService::class.java)
         }

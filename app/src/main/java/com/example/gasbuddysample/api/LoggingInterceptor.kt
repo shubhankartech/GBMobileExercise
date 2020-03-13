@@ -4,6 +4,7 @@ import okhttp3.Interceptor
 import java.io.IOException
 import java.util.logging.Logger
 
+// this class is ued only for debugging purpose
 class LoggingInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain):okhttp3.Response {
