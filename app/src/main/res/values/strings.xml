@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GasBuddySample</string>
+    <string name="retry">Try Again</string>
 </resources>

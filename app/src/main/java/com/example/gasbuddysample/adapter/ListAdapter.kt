@@ -5,22 +5,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.example.gasbuddysample.model.PicsumImage
-import android.os.Bundle
 import android.view.ViewGroup
+import com.example.gasbuddysample.R
 import com.example.gasbuddysample.model.NetworkState
+import com.example.gasbuddysample.viewholder.ImageItemViewHolder
+import com.example.gasbuddysample.viewholder.NetworkStatusViewHolder
 
 
 class ListAdapter(
-    private val glide: RequestManager
+    private val glide: RequestManager,
+    private val retryCallback: () -> Unit
 ) : PagedListAdapter<PicsumImage, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-//            R.layout.reddit_post_item -> (holder as RedditPostViewHolder).bind(getItem(position))
-//            R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bindTo(
-//                networkState)
+            R.layout.list_item -> (holder as ImageItemViewHolder).bind(getItem(position))
+            R.layout.network_item -> (holder as NetworkStatusViewHolder).bindTo(
+                networkState)
         }
     }
 
@@ -30,7 +33,7 @@ class ListAdapter(
         payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
             val item = getItem(position)
-            (holder as ImagePostViewHolder).updateScore(item)
+            (holder as ImageItemViewHolder).update(payloads,item)
         } else {
             onBindViewHolder(holder, position)
         }
@@ -38,8 +41,8 @@ class ListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-//            R.layout.reddit_post_item -> RedditPostViewHolder.create(parent, glide)
-//            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
+            R.layout.list_item -> ImageItemViewHolder.create(parent, glide)
+            R.layout.network_item -> NetworkStatusViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
@@ -47,11 +50,11 @@ class ListAdapter(
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 
     override fun getItemViewType(position: Int): Int {
-//        return if (hasExtraRow() && position == itemCount - 1) {
-//            R.layout.network_state_item
-//        } else {
-//            R.layout.reddit_post_item
-//        }
+        return if (hasExtraRow() && position == itemCount - 1) {
+            R.layout.network_item
+        } else {
+            R.layout.list_item
+        }
     }
 
     override fun getItemCount(): Int {
@@ -84,18 +87,16 @@ class ListAdapter(
                 oldItem.id == newItem.id
 
             override fun getChangePayload(oldItem: PicsumImage, newItem: PicsumImage): Any? {
-                val diff = Bundle()
+                val set = mutableSetOf<String>()
                 if (oldItem.author != newItem.author) {
-                    diff.putString("author", newItem.author)
+                    set.add("author")
                 }
                 if (oldItem.downloadUrl != newItem.downloadUrl) {
-                    diff.putString("downloadUrl", newItem.downloadUrl)
+                    set.add("downloadUrl")
                 }
 
-                if (diff.size() == 0) {
-                    return null
-                }
-                return diff
+
+                return set
             }
         }
     }

@@ -14,9 +14,9 @@ import com.example.gasbuddysample.model.PicsumImage
 
 class ListViewModel : ViewModel() {
 
-    private val networkState: LiveData<NetworkState>
-    private val imageLiveData: LiveData<PagedList<PicsumImage>>
-    private val refreshState: LiveData<NetworkState>
+    val networkState: LiveData<NetworkState>
+    val imageLiveData: LiveData<PagedList<PicsumImage>>
+    val refreshState: LiveData<NetworkState>
 
     init {
         val sourceFactory: ModelDataSourceFactory =
