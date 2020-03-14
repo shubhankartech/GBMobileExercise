@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.example.gasbuddysample.R
 import com.example.gasbuddysample.model.PicsumImage
+import com.example.gasbuddysample.ui.main.DetailsActivity
 
 class ImageItemViewHolder(view: View, private val glide: RequestManager)
     : RecyclerView.ViewHolder(view) {
@@ -19,8 +20,9 @@ class ImageItemViewHolder(view: View, private val glide: RequestManager)
     private var item : PicsumImage? = null
     init {
         view.setOnClickListener {
-            item?.url?.let { url ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            item?.id?.let { id ->
+                val intent = Intent(view.context, DetailsActivity::class.java)
+                intent.putExtra(Intent.EXTRA_TEXT, id)
                 view.context.startActivity(intent)
             }
         }

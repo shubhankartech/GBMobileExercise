@@ -63,6 +63,9 @@ class ModelDataSource(
                 }
 
             } catch (exception: Exception) {
+                retry = {
+                    loadInitial(params, callback)
+                }
                 // displaying appropriate error message based on error not handled
                 val error = NetworkState.error(exception.message ?: "unknown error")
                 networkState.postValue(error)
@@ -104,6 +107,9 @@ class ModelDataSource(
                 }
 
             } catch (exception: Exception) {
+                retry = {
+                    loadAfter(params, callback)
+                }
                 Log.e("ModelDataSource", "Failed to fetch data!")
                 networkState.postValue(NetworkState.error("Failed to fetch data!"))
             }

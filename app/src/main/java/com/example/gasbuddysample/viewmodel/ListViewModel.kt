@@ -18,8 +18,10 @@ class ListViewModel : ViewModel() {
     val imageLiveData: LiveData<PagedList<PicsumImage>>
     val refreshState: LiveData<NetworkState>
 
+    private var retry: (() -> Unit)? = null
+
     init {
-        val sourceFactory: ModelDataSourceFactory =
+        val sourceFactory =
             ModelDataSourceFactory(PicsumService.getService(), viewModelScope)
         val config = PagedList.Config.Builder()
             .setPageSize(30)
@@ -28,10 +30,12 @@ class ListViewModel : ViewModel() {
 
         imageLiveData = LivePagedListBuilder<String, PicsumImage>(sourceFactory, config).build()
         networkState = Transformations.switchMap(sourceFactory.sourceLiveData)
-        { sourceLiveData -> sourceLiveData.networkState };
+        { sourceLiveData -> sourceLiveData.networkState }
 
         refreshState = Transformations.switchMap(sourceFactory.sourceLiveData)
-        { sourceLiveData -> sourceLiveData.initialLoad };
+        { sourceLiveData -> sourceLiveData.initialLoad }
+
+        retry = {sourceFactory.sourceLiveData.value?.retryAllFailed()}
 
     }
 
@@ -40,7 +44,7 @@ class ListViewModel : ViewModel() {
     }
 
     fun retry() {
-        imageLiveData.value?.retry()
+        retry?.invoke()
     }
 
 
